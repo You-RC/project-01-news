@@ -10,6 +10,7 @@ interface Article {
   link: string;
   pubDate: string;
   creator?: string;
+  source: string;
 }
 
 interface StockPoint {
@@ -60,6 +61,13 @@ export default function News() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [newsLoading, setNewsLoading] = useState(false);
+  const [activeNewsQuery, setActiveNewsQuery] = useState('');
+  const [newsSources, setNewsSources] = useState<string[]>([]);
+  const [worldHeadline, setWorldHeadline] = useState('');
+  const [worldKeyPoints, setWorldKeyPoints] = useState<string[]>([]);
+  const [worldSources, setWorldSources] = useState<string[]>([]);
+  const [worldLoading, setWorldLoading] = useState(true);
+  const [worldError, setWorldError] = useState<string | null>(null);
 
   const [stockInput, setStockInput] = useState('AAPL');
   const [stockSymbol, setStockSymbol] = useState('AAPL');
@@ -88,6 +96,8 @@ export default function News() {
           throw new Error(data.error || 'Failed to fetch news');
         }
         setArticles(data.articles ?? []);
+        setActiveNewsQuery(data.query ?? query);
+        setNewsSources(data.sources ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -103,6 +113,32 @@ export default function News() {
 
     return () => window.clearTimeout(timeoutId);
   }, [searchTerm]);
+
+  useEffect(() => {
+    const fetchWorldSummary = async () => {
+      try {
+        setWorldLoading(true);
+        setWorldError(null);
+
+        const response = await fetch('/api/world-summary');
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch world summary');
+        }
+
+        setWorldHeadline(data.headline ?? '');
+        setWorldKeyPoints(data.keyPoints ?? []);
+        setWorldSources(data.sources ?? []);
+      } catch (err) {
+        setWorldError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setWorldLoading(false);
+      }
+    };
+
+    void fetchWorldSummary();
+  }, []);
 
   useEffect(() => {
     void fetchStockChart(stockSymbol, chartInterval, chartRange);
@@ -350,8 +386,10 @@ export default function News() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 p-4">
-      <section className="rounded-lg bg-white p-6 shadow-sm">
+    <div className="mx-auto max-w-7xl p-4">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-8">
+          <section className="rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold">Today&apos;s Business News</h1>
@@ -374,6 +412,33 @@ export default function News() {
           </div>
         </div>
 
+        <div className="mb-5 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-slate-900">
+              {activeNewsQuery
+                ? `Search results for "${activeNewsQuery}"`
+                : 'Top business headlines'}
+            </p>
+            <p className="text-sm text-slate-600">
+              {activeNewsQuery
+                ? 'Results are ranked from free news feeds by how strongly they match your search.'
+                : 'Showing a blended headline feed from free business news sources.'}
+            </p>
+          </div>
+          {newsSources.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {newsSources.map(source => (
+                <span
+                  key={source}
+                  className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+                >
+                  {source}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
         {newsLoading ? (
           <p className="text-sm text-gray-600">Searching news...</p>
         ) : articles.length === 0 ? (
@@ -384,6 +449,8 @@ export default function News() {
               <li key={index} className="rounded-lg border p-4 hover:border-slate-400">
                 <h2 className="text-lg font-semibold">{article.title}</h2>
                 <p className="text-sm text-gray-500">
+                  <span className="font-medium text-slate-700">{article.source}</span>
+                  {' · '}
                   {article.creator ? `${article.creator} · ` : ''}
                   {new Date(article.pubDate).toLocaleDateString()}
                 </p>
@@ -530,6 +597,57 @@ export default function News() {
           </div>
         )}
       </section>
+        </div>
+
+        <aside className="xl:sticky xl:top-4 xl:self-start">
+          <section className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="mb-4 space-y-2">
+              <h2 className="text-xl font-semibold">World Briefing</h2>
+              <p className="text-sm text-gray-600">
+                Quick key points from major free world-news feeds.
+              </p>
+            </div>
+
+            {worldLoading ? (
+              <p className="text-sm text-slate-600">Loading world briefing...</p>
+            ) : worldError ? (
+              <p className="text-sm text-red-600">{worldError}</p>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium leading-6 text-slate-900">{worldHeadline}</p>
+                </div>
+
+                {worldKeyPoints.length > 0 && (
+                  <ul className="space-y-3">
+                    {worldKeyPoints.map((point, index) => (
+                      <li
+                        key={`${point}-${index}`}
+                        className="rounded-xl border border-slate-200 bg-white p-3 text-sm leading-6 text-slate-700"
+                      >
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {worldSources.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {worldSources.map(source => (
+                      <span
+                        key={source}
+                        className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600"
+                      >
+                        {source}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }
