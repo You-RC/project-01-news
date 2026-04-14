@@ -83,6 +83,15 @@ In VS Code:
 
 Then open [http://localhost:3000](http://localhost:3000).
 
+## Quick Launch On Mac
+
+If you want to start the app by double-clicking instead of opening an editor first, the project also includes:
+
+- `Run Stock News.command` to launch the dev server from Finder
+- `Run Stock News.app` as a macOS app launcher bundle
+
+These launchers are intended for local development convenience and start the same local web app at `http://localhost:3000`.
+
 ## Usage
 
 ### Search News
