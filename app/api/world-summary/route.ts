@@ -53,16 +53,51 @@ function normalizeForMatch(input: string) {
   return input.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
+function uniqueTerms(input: string) {
+  return new Set(
+    normalizeForMatch(input)
+      .split(' ')
+      .filter(term => term.length > 2)
+  );
+}
+
+function jaccardSimilarity(a: Set<string>, b: Set<string>) {
+  if (a.size === 0 || b.size === 0) {
+    return 0;
+  }
+
+  let intersection = 0;
+  for (const term of a) {
+    if (b.has(term)) {
+      intersection += 1;
+    }
+  }
+
+  return intersection / (a.size + b.size - intersection);
+}
+
 function dedupeArticles(articles: WorldArticle[]) {
   const seen = new Set<string>();
+  const kept: WorldArticle[] = [];
 
   return articles.filter(article => {
     const key = normalizeForMatch(article.link || article.title);
+    const articleTerms = uniqueTerms(`${article.title} ${article.contentSnippet}`);
     if (!key || seen.has(key)) {
       return false;
     }
 
+    const isNearDuplicate = kept.some(existing => {
+      const existingTerms = uniqueTerms(`${existing.title} ${existing.contentSnippet}`);
+      return jaccardSimilarity(articleTerms, existingTerms) > 0.72;
+    });
+
+    if (isNearDuplicate) {
+      return false;
+    }
+
     seen.add(key);
+    kept.push(article);
     return true;
   });
 }
@@ -98,10 +133,36 @@ function buildHeadline(highlights: WorldArticle[]) {
 }
 
 function buildKeyPoints(highlights: WorldArticle[]) {
-  return highlights.slice(0, 4).map(item => {
-    const snippet = item.contentSnippet ? ` ${item.contentSnippet}` : '';
-    return `${item.title}.${snippet}`.replace(/\.\s*\./g, '.').trim();
-  });
+  const points: string[] = [];
+
+  for (const item of highlights) {
+    const normalizedTitle = normalizeForMatch(item.title);
+    const cleanedSnippet = item.contentSnippet
+      .split(/[.!?]+/)
+      .map(sentence => sentence.trim())
+      .filter(Boolean)
+      .find(sentence => {
+        const normalizedSentence = normalizeForMatch(sentence);
+        return normalizedSentence && !normalizedSentence.includes(normalizedTitle);
+      });
+
+    const point = cleanedSnippet
+      ? `${item.title}. ${cleanedSnippet}.`
+      : `${item.title}.`;
+
+    const normalizedPoint = normalizeForMatch(point);
+    if (!normalizedPoint || points.some(existing => normalizeForMatch(existing) === normalizedPoint)) {
+      continue;
+    }
+
+    points.push(point.replace(/\.\s*\./g, '.').trim());
+
+    if (points.length === 4) {
+      break;
+    }
+  }
+
+  return points;
 }
 
 async function loadWorldSummary() {
