@@ -602,14 +602,14 @@ export default function News() {
         <aside className="xl:sticky xl:top-4 xl:self-start">
           <section className="rounded-lg bg-white p-6 shadow-sm xl:max-h-[calc(100vh-2rem)] xl:overflow-y-auto">
             <div className="mb-4 space-y-2">
-              <h2 className="text-xl font-semibold">World Briefing</h2>
+              <h2 className="text-xl font-semibold">AI Briefing</h2>
               <p className="text-sm text-gray-600">
-                Quick key points from major free world-news feeds.
+                Top AI market news, ranked and summarized for a fast catch-up.
               </p>
             </div>
 
             {worldLoading ? (
-              <p className="text-sm text-slate-600">Loading world briefing...</p>
+              <p className="text-sm text-slate-600">Loading AI briefing...</p>
             ) : worldError ? (
               <p className="text-sm text-red-600">{worldError}</p>
             ) : (
