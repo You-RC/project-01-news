@@ -1,71 +1,107 @@
 # Project Log
 
-This file tracks the major product, UI, and engineering changes made to the project over time so the README can stay focused on setup, features, and usage.
+This file is the narrative companion to [CHANGELOG.md](./CHANGELOG.md).
 
-## April 12, 2026
+Use this document for:
 
-- Created the initial Next.js project structure
-- Added the main news page and stock market app layout
-- Added RSS-based business news fetching
-- Added the initial stock chart API route and basic chart display
-- Added local helper scripts such as `run.sh`
+- product direction and rationale
+- notable design and engineering decisions
+- milestone snapshots of how the app evolved
 
-## April 13, 2026
+Use [CHANGELOG.md](./CHANGELOG.md) for the structured record of what changed and when.
 
-### Stock Chart Improvements
+## Project Arc
 
-- Replaced the simple stock line chart with a candlestick/K-line style chart
-- Added `Daily`, `Weekly`, and `Monthly` chart intervals
-- Added longer historical ranges from `3M` to `Max`
-- Enabled horizontal chart scrolling for older price history
-- Expanded the stock API to support configurable `range` and `interval`
-- Switched stock data handling to full OHLC data instead of close-only points
+The project started as a simple stock-market news viewer and gradually moved toward a more useful investor dashboard. The main pattern across the work has been:
 
-### News Search Improvements
+1. build a working baseline
+2. notice where the experience feels too static or too generic
+3. improve the product around real usage pain points
 
-- Changed the news search from page-only filtering to backend-driven search
-- Added query-based search with live RSS results instead of only filtering the preloaded homepage stories
-- Improved article content extraction and cleanup for better search matching
-- Added multi-source search support using free feeds
-- Added deduplication and ranking logic for news search results
-- Added short-term backend caching for more stable free-source results
-- Added source labels and top-headlines/search-results context in the UI
+## Milestones
 
-### Documentation And Launchers
+### Initial Baseline
 
-- Updated the README to reflect the newer chart and search features
-- Added dated documentation for the latest improvements
-- Expanded the README into a fuller GitHub-style project overview
-- Added Mac quick-launch documentation
-- Added `Run Stock News.command` and `Run Stock News.app` launch helpers
+The first version established the core app shell:
 
-### Summary Section
+- a Next.js app with a homepage
+- RSS-based business headlines
+- a stock chart section
+- basic local launch scripts
 
-- Added an initial world-news summary section
-- Moved the summary into a sidebar layout for better page balance
-- Simplified the sidebar into a more concise briefing format
+At this stage, the app proved the concept, but it was still closer to a prototype than a polished tool.
 
-## April 14, 2026
+### Market Dashboard Direction
 
-### Reliability And Summary Quality
+The project became more product-like once the stock chart and news search stopped behaving like static demo features.
 
-- Improved summary deduplication to reduce repeated sidebar points
-- Made the sidebar independently scrollable on large screens
-- Continued refining summary formatting and source handling
+Key direction changes:
 
-## April 16, 2026
+- the stock chart moved from a simple line display to a more useful candlestick view
+- chart controls became more practical with interval switching and longer history ranges
+- news search moved from frontend-only filtering to backend-driven retrieval
 
-### AI Briefing Refactor
+This was an important shift because the app began responding to user intent instead of just displaying preloaded content.
 
-- Changed the sidebar summary focus from generic world news to AI-related market news
-- Switched the source mix to AI- and technology-relevant feeds such as Reuters Tech, BBC Tech, and Google News AI search
-- Added AI-theme detection for areas such as model releases, chips, regulation, enterprise adoption, and deals
-- Ranked briefing items by market relevance rather than only by recency
-- Reworked the AI summary bullets into cleaner single-sentence market catch-up points
-- Reduced repetitive fallback language in the AI briefing
+### Reliability Focus
 
-## Ongoing Product Direction
+Once the main features worked, the next challenge was reliability with free sources.
 
-- Positioning the app toward a more focused investor dashboard experience
-- Exploring watchlists, stock-specific briefings, and alert-style features as next logical product steps
-- Keeping the stack lightweight with free public data sources where possible
+That led to:
+
+- multi-source aggregation
+- deduplication
+- basic ranking logic
+- short-term caching
+- clearer source labels in the UI
+
+This was the point where the project started feeling less like a classroom exercise and more like a lightweight real-world tool.
+
+### Summary And Briefing Evolution
+
+The summary feature went through several iterations:
+
+- first as a world-news summary in the main content area
+- then as a more compact sidebar briefing
+- later as an AI-focused market briefing
+
+The biggest learning here was that a summary section is only useful if it helps a user catch up quickly. When it was too repetitive or too generic, it added clutter rather than value. The later versions moved toward ranked, concise, market-oriented bullets instead of simply rephrasing headlines.
+
+## Product Thinking
+
+The app is gradually moving away from “general finance content” and toward a narrower investor workflow.
+
+The strongest direction discussed so far is:
+
+- a personalized investor dashboard
+- focused watchlists
+- stock-specific news and summaries
+- concise daily catch-up behavior
+
+That direction is more compelling than competing head-on with broad free finance portals.
+
+## Engineering Notes
+
+A few patterns have consistently shaped the project:
+
+- prefer lightweight free sources first
+- keep the stack simple and easy to run locally
+- use backend cleanup and ranking to make weak public feeds more usable
+- let the UI explain source quality and result context clearly
+
+This means the app favors practical heuristics and product polish over heavyweight infrastructure.
+
+## Next Likely Steps
+
+The most promising next improvements are:
+
+- watchlists and saved stocks
+- stock-specific briefings
+- better AI and market relevance scoring
+- more polished empty/loading/error states
+- stronger visual identity
+
+## Relationship To Other Docs
+
+- [README.md](./README.md): what the project is, how to run it, and how to use it
+- [CHANGELOG.md](./CHANGELOG.md): structured record of notable shipped changes
