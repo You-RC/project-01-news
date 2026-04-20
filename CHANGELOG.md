@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented in this file.
 
+## 2026-04-19
+
+### Changed
+
+- Switched the AI briefing route from rules-only output to an optional LLM summarization pass with automatic fallback to heuristic summaries
+- Tightened AI briefing selection so duplicate stories and single-company clusters are less likely to dominate the sidebar
+
+### Improved
+
+- Reduced repeated title/snippet wording in AI briefing bullets by avoiding evidence lines that simply echo the headline
+- Improved stock symbol resolution for shorthand inputs such as `SP500`, `VFV`, `BTC`, and `ETH`
+- Added index, Canadian ETF, and crypto alias handling so the chart API resolves more user-friendly search terms to Yahoo-compatible symbols
+- Added Yahoo `spark`-series fallback logic so symbols with sparse OHLC history can still render a usable chart more often
+
 ## 2026-04-16
 
 ### Changed
