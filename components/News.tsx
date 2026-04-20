@@ -169,8 +169,8 @@ export default function News() {
       }
       setChartData(payload.chart ?? []);
       setChartCurrency(payload.currency || 'USD');
-      setStockSymbol(normalized);
-      setStockInput(normalized);
+      setStockSymbol(payload.symbol || normalized);
+      setStockInput(payload.symbol || normalized);
     } catch (err) {
       setStockError(err instanceof Error ? err.message : 'Unknown error fetching stock data');
       setChartData(null);

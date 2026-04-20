@@ -67,6 +67,23 @@ The summary feature went through several iterations:
 
 The biggest learning here was that a summary section is only useful if it helps a user catch up quickly. When it was too repetitive or too generic, it added clutter rather than value. The later versions moved toward ranked, concise, market-oriented bullets instead of simply rephrasing headlines.
 
+### AI Briefing And Symbol-Resolution Refinement
+
+Another iteration focused less on adding new sections and more on making existing features behave more like users expect.
+
+Two concrete examples drove this work:
+
+- the AI briefing could still collapse into duplicated or overly similar points
+- stock search behaved too literally for real-world inputs like `SP500`, `VFV`, `BTC`, and `ETH`
+
+For the briefing, the direction changed from “pick and assemble good-enough bullets” to “rank and diversify good source material first, then optionally let an LLM turn that into a tighter briefing.” That preserved the lightweight feed-based architecture while making the end result more readable and less repetitive.
+
+For the stock chart, the lesson was that users search by mental model, not by provider-specific ticker syntax. A person types `BTC`, not necessarily `BTC-USD`; they type `VFV`, not always `VFV.TO`. The chart route now does more translation work so the product feels friendlier and less brittle.
+
+This phase reinforced a product principle that matters for the whole app:
+
+- data-source quirks should be handled in the backend whenever possible so the interface feels forgiving instead of fussy
+
 ## Product Thinking
 
 The app is gradually moving away from “general finance content” and toward a narrower investor workflow.
